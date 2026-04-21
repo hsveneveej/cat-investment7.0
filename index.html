@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🐱 CAT INVESTMENT · OFICIAL</title>
+    <style>
+        :root { --lime: #32cd32; --orange: #ff4500; --dark: #000; --card: #111; --gold: #ffd700; --blue: #00b4db; --purple: #9b59b6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--dark); color: white; overflow-x: hidden; }
+
+        .header-adm { text-align: center; padding: 18px 0; background: #050505; border-bottom: 1px solid #111; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .header-adm h1 { color: var(--lime); font-size: 22px; cursor: pointer; letter-spacing: 2px; }
+        
+        .cat-mascot { font-size: 28px; animation: bounce 1.5s infinite; display: inline-block; cursor: pointer; }
+        @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
+        .cat-mascot:active { animation: jump 0.4s; }
+        @keyframes jump { 0%{transform:translateY(0) scale(1);} 50%{transform:translateY(-20px) scale(1.2);} 100%{transform:translateY(0) scale(1);} }
+
+        .screen { display: none; padding: 15px; padding-bottom: 90px; animation: fadeIn 0.3s; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        input, textarea { width: 100%; padding: 15px; background: #1a1a1a; border: 1.5px solid #333; color: white; border-radius: 16px; margin-bottom: 12px; font-size: 15px; }
+        input:focus, textarea:focus { border-color: var(--lime); outline: none; background: #222; }
+
+        button { border: none; border-radius: 40px; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 5px 0 rgba(0,0,0,0.2); }
+        button:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+        .btn-lime { background: var(--lime); color: #000; padding: 16px; width: 100%; font-size: 16px; }
+        .btn-orange { background: var(--orange); color: #fff; padding: 16px; width: 100%; font-size: 16px; }
+        .btn-gold { background: var(--gold); color: #000; padding: 16px; width: 100%; font-size: 16px; }
+        .btn-lime:disabled, .btn-orange:disabled { opacity: 0.5; transform: none; box-shadow: 0 3px 0 rgba(0,0,0,0.2); cursor: not-allowed; }
+
+        .card { background: var(--card); border: 1px solid #222; border-radius: 20px; padding: 16px; margin-bottom: 14px; }
+
+        .info-row { display: flex; justify-content: space-between; font-size: 13px; margin: 5px 0; color: #bbb; }
+
+        .vip-grid, .wealth-grid { display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
+        
+        .vip-card, .wealth-card { background: linear-gradient(145deg, #1a1a1a, #0f0f0f); border-radius: 20px; padding: 16px; border: 1.5px solid; position: relative; cursor: pointer; transition: all 0.2s; }
+        .vip-card:hover, .wealth-card:hover { transform: scale(1.01); }
+        
+        .vip-badge, .wealth-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 8px; }
+        .badge-vip1 { background: #32cd32; color: #000; }
+        .badge-vip2 { background: #ffd700; color: #000; }
+        .badge-vip3 { background: #ff4500; color: #fff; }
+        .badge-bronze { background: #cd7f32; color: #fff; }
+        .badge-prata { background: #c0c0c0; color: #000; }
+        .badge-ouro { background: var(--gold); color: #000; }
+        .badge-diamante { background: var(--blue); color: #fff; }
+        .badge-vip { background: var(--purple); color: #fff; }
+        
+        .vip-title, .wealth-title { font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 12px; }
+        .vip-details, .wealth-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+        .vip-item, .wealth-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 14px; text-align: center; }
+        .vip-label, .wealth-label { font-size: 10px; color: #aaa; }
+        .vip-value, .wealth-value { font-size: 14px; font-weight: bold; color: var(--gold); }
+        .vip-roi, .wealth-roi { font-size: 16px; font-weight: 900; color: var(--lime); }
+        
+        .vip-btn, .wealth-btn { background: var(--lime); color: #000; padding: 14px; border-radius: 30px; font-weight: bold; width: 100%; font-size: 14px; margin-top: 8px; }
+        .wealth-btn { background: var(--orange); color: #fff; }
+        .vip-btn:disabled, .wealth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .daily-card { background: linear-gradient(135deg, #1a2a1a, #0a1a0a); border: 2px solid var(--gold); border-radius: 20px; padding: 20px; margin: 15px 0; text-align: center; }
+        .daily-amount { font-size: 32px; font-weight: bold; color: var(--gold); }
+        .collect-btn { background: var(--gold); color: #000; padding: 14px 30px; border-radius: 40px; font-weight: bold; font-size: 18px; margin-top: 10px; display: inline-block; width: auto; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 15px; background: #0e0e0e; padding: 5px; border-radius: 50px; }
+        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; color: #aaa; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+        .tab.active { background: var(--lime); color: #000; }
+
+        .nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; height: 70px; background: #0b0b0b; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 99; }
+        .nav-link { color: #777; text-decoration: none; font-size: 11px; text-align: center; font-weight: 600; padding: 8px 12px; border-radius: 40px; cursor: pointer; transition: all 0.2s; }
+        .nav-link.active { color: var(--lime); background: rgba(50,205,50,0.1); }
+        .nav-link .icon { font-size: 22px; display: block; margin-bottom: 3px; }
+
+        .login-box { background: #0f0f0f; border-radius: 36px; padding: 28px 20px; border: 1px solid #2a2a2a; margin-top: 10px; position: relative; z-index: 5; }
+        .floating-badge { background: var(--lime); color: #000; font-weight: bold; padding: 6px 14px; border-radius: 60px; font-size: 12px; display: inline-block; margin-bottom: 15px; }
+
+        .live-feed { background: #0a0a0a; border-radius: 20px; padding: 15px; margin-top: 20px; border: 1px solid #2a2a2a; position: relative; z-index: 5; }
+        .feed-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+        .feed-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .feed-icon.dep { background: rgba(50,205,50,0.15); color: var(--lime); }
+        .feed-icon.out { background: rgba(255,69,0,0.15); color: var(--orange); }
+        .feed-content { flex: 1; }
+        .feed-name { font-weight: bold; font-size: 13px; }
+        .feed-amt { font-weight: bold; }
+        .feed-amt.dep { color: var(--lime); }
+        .feed-amt.out { color: var(--orange); }
+
+        .invite-box { background: linear-gradient(145deg, #1a1a1a, #0f0f0f); border: 2px solid var(--lime); border-radius: 24px; padding: 20px; margin: 15px 0; }
+        .invite-link { background: #000; padding: 15px; border-radius: 14px; border: 1px dashed var(--lime); word-break: break-all; font-size: 13px; margin: 10px 0; }
+
+        .badge-locked { background: #2a2a2a; color: #ccc; font-size: 11px; padding: 6px 12px; border-radius: 30px; }
+        .logout-btn { background: transparent; border: 1px solid #444; color: #888; padding: 12px; border-radius: 30px; width: 100%; margin-top: 20px; }
+
+        .golden-rules-mini { background: #0a0a0a; border-radius: 12px; padding: 10px 14px; margin-bottom: 15px; border-left: 4px solid var(--gold); font-size: 11px; color: #aaa; }
+
+        .saque-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .saque-btn { padding: 12px 5px; background: #1e1e1e; color: var(--gold); border-radius: 12px; font-weight: bold; font-size: 13px; border: 1px solid #333; cursor: pointer; }
+        .saque-btn.locked { opacity: 0.5; background: #151515; color: #666; cursor: not-allowed; }
+        .saque-trava { font-size: 9px; display: block; color: #888; margin-top: 3px; }
+        
+        .investment-locked { border-left: 4px solid #ff0000; }
+        .investment-active { border-left: 4px solid var(--lime); }
+        
+        .timer-text { font-size: 11px; color: #888; margin-top: 5px; }
+
+        .support-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(50,205,50,0.15);
+            border: 1.5px solid var(--lime);
+            border-radius: 40px;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--lime);
+        }
+        .support-btn:hover, .support-btn:active {
+            background: rgba(50,205,50,0.3);
+            transform: scale(1.02);
+        }
+        .support-container { text-align: center; margin-top: 15px; position: relative; z-index: 5; }
+
+        /* Estilos para o painel admin */
+        .admin-saque-details { background: #1a1a1a; border-radius: 12px; padding: 12px; margin: 10px 0; }
+        .admin-valor-pagar { font-size: 18px; font-weight: bold; color: var(--lime); }
+        .admin-divider { border-top: 1px solid #333; margin: 10px 0; }
+        .admin-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .admin-btn-approve { flex: 1; background: #22c55e; color: white; padding: 12px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; }
+        .admin-btn-reject { flex: 1; background: #ef4444; color: white; padding: 12px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; }
+        .admin-btn-approve:hover { background: #16a34a; }
+        .admin-btn-reject:hover { background: #dc2626; }
+
+        .withdrawal-status { 
+            background: #1a1a1a; 
+            border-radius: 12px; 
+            padding: 12px; 
+            margin: 10px 0; 
+            text-align: center; 
+            border-left: 4px solid var(--orange);
+        }
+        .withdrawal-status.available { border-left-color: var(--lime); }
+        .withdrawal-timer { font-size: 14px; font-weight: bold; color: var(--gold); }
+
+        /* Bolhas flutuantes de notificações */
+        .notification-bubble-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            max-width: 450px;
+            margin: 0 auto;
+            right: 0;
+        }
+
+        .floating-bubble {
+            position: absolute;
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border-radius: 50px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1.5px solid;
+            pointer-events: none;
+            animation: floatBubble 6s ease-in-out forwards;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+
+        .floating-bubble.deposit {
+            border-color: var(--lime);
+            box-shadow: 0 0 20px rgba(50,205,50,0.3);
+        }
+
+        .floating-bubble.withdraw {
+            border-color: var(--orange);
+            box-shadow: 0 0 20px rgba(255,69,0,0.3);
+        }
+
+        .bubble-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .bubble-icon.deposit {
+            background: rgba(50,205,50,0.2);
+            color: var(--lime);
+        }
+
+        .bubble-icon.withdraw {
+            background: rgba(255,69,0,0.2);
+            color: var(--orange);
+        }
+
+        .bubble-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bubble-name {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 600;
+        }
+
+        .bubble-amount {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .bubble-amount.deposit {
+            color: var(--lime);
+        }
+
+        .bubble-amount.withdraw {
+            color: var(--orange);
+        }
+
+        @keyframes floatBubble {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px) translateY(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateX(0) translateY(0);
+            }
+            80% {
+                opacity: 1;
+                transform: translateX(0) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(20px) translateY(0);
+            }
+        }
+
+        /* Campo de referência invisível para convite */
+        #ref-input {
+            display: none;
+        }
+
+        .invite-notice {
+            background: rgba(50,205,50,0.1);
+            border: 1px solid var(--lime);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: var(--lime);
+            display: none;
+        }
+
+        .invite-notice.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div style="max-width: 450px; margin: auto; min-height: 100vh; position: relative;">
+    
+    <!-- Container para bolhas flutuantes -->
+    <div class="notification-bubble-container" id="bubble-container"></div>
+
+    <div class="header-adm">
+        <h1 onclick="tapAdm()">🐱 CAT INVESTMENT</h1>
+        <span class="cat-mascot" id="cat-mascot" onclick="catJump()">😺</span>
+    </div>
+
+    <!-- TELA DE LOGIN -->
+    <div id="scr-login" class="screen active">
+        <div class="login-box">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <span class="floating-badge">⚡ ECONOMIA DIGITAL · MZ</span>
+            </div>
+            
+            <div class="invite-notice" id="invite-notice"></div>
+            
+            <input type="text" id="reg-name" placeholder="Nome Completo" value="">
+            <input type="text" id="reg-phone" placeholder="Número Celular" value="">
+            <input type="password" id="reg-pass" placeholder="Senha" value="">
+            <input type="hidden" id="ref-input" value="">
+            
+            <button class="btn-lime" onclick="handleCreateAccount()">✨ CRIAR CONTA</button>
+            <button class="btn-orange" style="margin-top: 10px;" onclick="handleLogin()">🔐 ENTRAR</button>
+            
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button style="flex: 1; background: #1e1e1e; color: #ccc; padding: 12px; box-shadow: none;" onclick="handleRecover()">🔑 Recuperar</button>
+                <button style="flex: 1; background: #1e1e1e; color: #ccc; padding: 12px; box-shadow: none;" onclick="fillDemo()">👤 Demo</button>
+            </div>
+        </div>
+
+        <div class="live-feed">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: var(--gold); font-weight: bold;">📡 ATIVIDADES RECENTES</span>
+                <span style="color: #888; font-size: 10px;">Ao vivo 🔴</span>
+            </div>
+            <div id="fake-feed"></div>
+        </div>
+        
+        <div class="support-container">
+            <div class="support-btn" onclick="window.open('https://wa.me/258851511841', '_blank')">
+                📞 SUPORTE 851511841 💬
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA HOME -->
+    <div id="scr-home" class="screen">
+        <div class="card" style="text-align: center; border-bottom: 5px solid var(--lime); background: linear-gradient(145deg, #0a1a0a, #050a05);">
+            <p style="font-size: 12px; color: #aaa;">SALDO PRINCIPAL</p>
+            <h1 id="bal-txt" style="color: var(--lime); font-size: 42px; font-weight: 900;">MT 0.00</h1>
+            <p id="user-info" style="font-size: 12px; background: #1e1e1e; display: inline-block; padding: 6px 18px; border-radius: 30px; margin-top: 8px;"></p>
+            
+            <div class="support-container" style="margin-top: 12px;">
+                <div class="support-btn" onclick="window.open('https://wa.me/258851511841', '_blank')">
+                    📞 SUPORTE 851511841 💬
+                </div>
+            </div>
+        </div>
+
+        <div id="daily-section" style="display: none;">
+            <div class="daily-card">
+                <p style="font-size: 12px; color: #aaa;">📅 GANHO DIÁRIO DISPONÍVEL</p>
+                <div class="daily-amount" id="daily-amount">MT 0.00</div>
+                <button class="collect-btn" id="collect-btn" onclick="collectDaily()">💰 COLETAR AGORA</button>
+                <div class="timer-text" id="daily-timer"></div>
+            </div>
+        </div>
+
+        <div class="golden-rules-mini">
+            <span>🛡️ REGRAS:</span> VIP obrigatório para convidar · Taxa saque 10% · Fundos liberam com 1 convidado · 1 saque/dia
+        </div>
+
+        <div class="tabs">
+            <div id="t1" class="tab active" onclick="switchTab(1)">⭐ CAT VIP (20 níveis)</div>
+            <div id="t2" class="tab" onclick="switchTab(2)">🏦 FUNDO RIQUEZA (10)</div>
+        </div>
+
+        <div id="list-vips" class="vip-grid"></div>
+        <div id="list-wealth" class="wealth-grid" style="display: none;"></div>
+        
+        <div id="active-sec" style="display:none;">
+            <h4 style="margin: 20px 0 10px; color: var(--gold);">📦 INVESTIMENTOS ATIVOS</h4>
+            <div id="my-active-investments"></div>
+        </div>
+    </div>
+
+    <!-- TELA DEPÓSITO -->
+    <div id="scr-dep" class="screen">
+        <h3 style="color: var(--lime); margin-bottom: 20px;">📥 DEPÓSITO RÁPIDO</h3>
+        
+        <div class="card" style="border-left: 6px solid var(--lime);">
+            <p style="font-size: 11px; color: #aaa;">ENVIE PARA:</p>
+            <div style="margin: 12px 0;">
+                <div style="background: #1a1a1a; padding: 12px; border-radius: 16px; margin-bottom: 8px;">
+                    <span style="color: #888;">M-Pesa:</span>
+                    <p id="txt-n1" style="font-weight: bold; font-size: 18px;"></p>
+                </div>
+                <div style="background: #1a1a1a; padding: 12px; border-radius: 16px;">
+                    <span style="color: #888;">e-Mola:</span>
+                    <p style="font-weight: bold; font-size: 18px;">870514180 - Amélia</p>
+                </div>
+            </div>
+        </div>
+
+        <input type="text" id="dep-numero" placeholder="Seu número (que enviou)">
+        <input type="text" id="dep-nome" placeholder="Seu nome completo">
+        <input type="number" id="in-amt" placeholder="Valor do Depósito (MT)">
+        <textarea id="in-ref" placeholder="Comprovante / Referência"></textarea>
+        <button class="btn-lime" onclick="sendDep()">✅ CONFIRMAR DEPÓSITO</button>
+        
+        <div class="support-container">
+            <div class="support-btn" onclick="window.open('https://wa.me/258851511841', '_blank')">
+                📞 SUPORTE 851511841 💬
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA SAQUE -->
+    <div id="scr-out" class="screen">
+        <h3 style="color: var(--orange); margin-bottom: 20px;">💸 LEVANTAMENTO</h3>
+        
+        <div class="card" style="border-left: 6px solid var(--orange); background: rgba(255,69,0,0.05);">
+            <p style="font-size: 12px; color: var(--orange);">⚠️ TAXA ADMINISTRATIVA: 10% (FIXA) · LIMITE: 1 SAQUE/DIA</p>
+        </div>
+
+        <div id="withdrawal-status-container"></div>
+
+        <input type="text" id="out-numero" placeholder="Seu número (M-Pesa / e-Mola)">
+        <input type="text" id="out-nome" placeholder="Seu nome completo">
+        
+        <p style="font-size: 12px; color: #aaa; margin: 10px 0;">Selecione o valor:</p>
+        <div id="grid-out" class="saque-grid"></div>
+        
+        <input type="text" id="out-val" placeholder="MT 0.00" readonly style="text-align: center; font-weight: bold; color: var(--gold); font-size: 18px; background: #1a1a1a; border: 1px solid var(--orange);">
+        
+        <div style="background: #1a1a1a; padding: 15px; border-radius: 16px; margin: 15px 0;">
+            <div class="info-row"><span>Valor solicitado:</span> <span id="preview-amount">MT 0,00</span></div>
+            <div class="info-row"><span>Taxa (10%):</span> <span id="preview-fee">MT 0,00</span></div>
+            <div class="info-row" style="border-top: 1px solid #333; padding-top: 8px; margin-top: 5px;">
+                <span>Você receberá:</span> <span style="color: var(--lime); font-weight: bold;" id="preview-net">MT 0,00</span>
+            </div>
+        </div>
+
+        <div id="saque-trava-info" style="font-size: 11px; color: var(--orange); margin-bottom: 12px; text-align: center;"></div>
+        <button id="btn-submit-out" class="btn-orange" onclick="sendOut()">📤 SOLICITAR SAQUE</button>
+        
+        <div class="support-container">
+            <div class="support-btn" onclick="window.open('https://wa.me/258851511841', '_blank')">
+                📞 SUPORTE 851511841 💬
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA CONVIDAR -->
+    <div id="scr-invite" class="screen">
+        <h3 style="color: var(--lime); margin-bottom: 20px;">👥 CONVIDAR AMIGOS</h3>
+        
+        <div id="invite-section" style="display: none;">
+            <div class="invite-box">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <span style="font-size: 30px;">🎁</span>
+                    <div>
+                        <h3 style="color: var(--lime);">Ganhe 10% de Comissão</h3>
+                        <p style="font-size: 12px; color: #aaa;">Sobre cada depósito dos seus indicados!</p>
+                    </div>
+                </div>
+                <div class="invite-link" id="invite-link-display"></div>
+                <button class="btn-lime" onclick="copyInviteLink()">📋 COPIAR LINK</button>
+            </div>
+        </div>
+        <div id="invite-locked" style="text-align: center; padding: 30px; background: #0a0a0a; border-radius: 20px; border: 1px solid #333;">
+            <span style="font-size: 40px;">🔒</span>
+            <p style="margin: 15px 0; color: #aaa;">Ative um plano VIP para convidar amigos</p>
+            <button class="btn-lime" onclick="changeScr('scr-home')">⭐ ATIVAR VIP</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <p style="font-size: 13px; color: var(--gold);">🏆 Ganhos com indicações: <span id="invite-earnings">MT 0</span></p>
+            <p style="font-size: 11px; color: #888; margin-top: 8px; cursor: pointer;" onclick="showInvitedList()">📊 Ver meus indicados →</p>
+        </div>
+
+        <div class="team-list">
+            <h4 style="color: #fff; margin: 20px 0 12px;">👤 Seus Indicados (<span id="invited-count">0</span>)</h4>
+            <div id="team-members-list"></div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">🚪 SAIR DA CONTA</button>
+        
+        <div class="support-container">
+            <div class="support-btn" onclick="window.open('https://wa.me/258851511841', '_blank')">
+                📞 SUPORTE 851511841 💬
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL ADMIN -->
+    <div id="scr-adm" class="screen">
+        <h2 style="color: var(--lime); margin-bottom: 20px;">🛡️ PAINEL ADMIN</h2>
+        
+        <div style="background: #0a0a0a; border-radius: 20px; padding: 15px; margin: 10px 0;">
+            <p style="margin-bottom: 8px; color: var(--lime);">📱 Alterar M-Pesa:</p>
+            <input type="text" id="ed-n1" placeholder="Ex: 85XXXXXXX - Nome">
+            <button class="btn-lime" style="padding: 12px;" onclick="saveConfig()">Atualizar</button>
+        </div>
+        
+        <div style="background: #0a0a0a; border-radius: 20px; padding: 15px; margin: 10px 0;">
+            <p style="margin-bottom: 8px; color: var(--orange);">🔍 Buscar Usuário:</p>
+            <input type="text" id="search-user" placeholder="Número do usuário">
+            <button class="btn-orange" style="padding: 12px;" onclick="searchUser()">Ver Informações</button>
+            <div id="user-info-display" style="margin-top: 10px; font-size: 12px;"></div>
+        </div>
+        
+        <h3 style="margin: 20px 0 10px; color: #ffd966;">📋 Pendências</h3>
+        <div id="adm-list"></div>
+        <button class="btn-orange" style="margin-top: 20px;" onclick="changeScr('scr-home')">🔙 Voltar</button>
+    </div>
+
+    <nav class="nav" id="menu" style="display: none;">
+        <a class="nav-link active" onclick="changeScr('scr-home')"><span class="icon">🏠</span>Home</a>
+        <a class="nav-link" onclick="changeScr('scr-dep')"><span class="icon">📥</span>Depósito</a>
+        <a class="nav-link" onclick="changeScr('scr-out')"><span class="icon">💸</span>Saque</a>
+        <a class="nav-link" id="nav-invite" onclick="changeScr('scr-invite')"><span class="icon">👥</span>Convidar</a>
+    </nav>
+</div>
+
+<script>
+// DADOS DOS 20 NÍVEIS VIP
+const VIPS = [
+    { lv: 1, ativacao: 500, diario: 20, total210: 4200, cor: 'badge-vip1' },
+    { lv: 2, ativacao: 750, diario: 30, total210: 6300, cor: 'badge-vip1' },
+    { lv: 3, ativacao: 1000, diario: 40, total210: 8400, cor: 'badge-vip1' },
+    { lv: 4, ativacao: 1500, diario: 60, total210: 12600, cor: 'badge-vip1' },
+    { lv: 5, ativacao: 2000, diario: 80, total210: 16800, cor: 'badge-vip1' },
+    { lv: 6, ativacao: 3000, diario: 120, total210: 25200, cor: 'badge-vip1' },
+    { lv: 7, ativacao: 4500, diario: 180, total210: 37800, cor: 'badge-vip2' },
+    { lv: 8, ativacao: 6000, diario: 240, total210: 50400, cor: 'badge-vip2' },
+    { lv: 9, ativacao: 8000, diario: 320, total210: 67200, cor: 'badge-vip2' },
+    { lv: 10, ativacao: 12000, diario: 480, total210: 100800, cor: 'badge-vip2' },
+    { lv: 11, ativacao: 18000, diario: 720, total210: 151200, cor: 'badge-vip2' },
+    { lv: 12, ativacao: 25000, diario: 1000, total210: 210000, cor: 'badge-vip2' },
+    { lv: 13, ativacao: 35000, diario: 1400, total210: 294000, cor: 'badge-vip3' },
+    { lv: 14, ativacao: 50000, diario: 2000, total210: 420000, cor: 'badge-vip3' },
+    { lv: 15, ativacao: 75000, diario: 3000, total210: 630000, cor: 'badge-vip3' },
+    { lv: 16, ativacao: 100000, diario: 4000, total210: 840000, cor: 'badge-vip3' },
+    { lv: 17, ativacao: 200000, diario: 8000, total210: 1680000, cor: 'badge-vip3' },
+    { lv: 18, ativacao: 400000, diario: 16000, total210: 3360000, cor: 'badge-vip3' },
+    { lv: 19, ativacao: 700000, diario: 28000, total210: 5880000, cor: 'badge-vip3' },
+    { lv: 20, ativacao: 1000000, diario: 40000, total210: 8400000, cor: 'badge-vip3' }
+];
+
+// DADOS DOS 10 FUNDOS DE RIQUEZA
+const WEALTH = [
+    { id: 'F1', name: 'Fundo Bronze 1', ativacao: 500, ciclo: 10, valorFinal: 750, trava: 1, badge: 'badge-bronze', icon: '🥉' },
+    { id: 'F2', name: 'Fundo Bronze 2', ativacao: 1000, ciclo: 15, valorFinal: 1600, trava: 1, badge: 'badge-bronze', icon: '🥉' },
+    { id: 'F3', name: 'Fundo Prata 1', ativacao: 2500, ciclo: 25, valorFinal: 4500, trava: 1, badge: 'badge-prata', icon: '🥈' },
+    { id: 'F4', name: 'Fundo Prata 2', ativacao: 5000, ciclo: 35, valorFinal: 10000, trava: 1, badge: 'badge-prata', icon: '🥈' },
+    { id: 'F5', name: 'Fundo Ouro 1', ativacao: 10000, ciclo: 50, valorFinal: 25000, trava: 1, badge: 'badge-ouro', icon: '🥇' },
+    { id: 'F6', name: 'Fundo Ouro 2', ativacao: 20000, ciclo: 70, valorFinal: 55000, trava: 1, badge: 'badge-ouro', icon: '🥇' },
+    { id: 'F7', name: 'Fundo Diamante 1', ativacao: 40000, ciclo: 90, valorFinal: 120000, trava: 1, badge: 'badge-diamante', icon: '💎' },
+    { id: 'F8', name: 'Fundo Diamante 2', ativacao: 80000, ciclo: 120, valorFinal: 280000, trava: 1, badge: 'badge-diamante', icon: '💎' },
+    { id: 'F9', name: 'Fundo VIP 1', ativacao: 150000, ciclo: 150, valorFinal: 600000, trava: 1, badge: 'badge-vip', icon: '👑' },
+    { id: 'F10', name: 'Fundo VIP 2', ativacao: 500000, ciclo: 210, valorFinal: 2500000, trava: 1, badge: 'badge-vip', icon: '👑' }
+];
+
+const OUTS = [
+    { valor: 100, trava: 0 }, { valor: 200, trava: 0 }, { valor: 300, trava: 0 }, { valor: 400, trava: 0 },
+    { valor: 500, trava: 0 }, { valor: 600, trava: 0 }, { valor: 700, trava: 0 }, { valor: 800, trava: 0 },
+    { valor: 900, trava: 0 }, { valor: 1000, trava: 0 }, { valor: 2000, trava: 1 }, { valor: 3000, trava: 1 },
+    { valor: 5000, trava: 1 }, { valor: 10000, trava: 1 }, { valor: 20000, trava: 3 }, { valor: 50000, trava: 3 }, { valor: 75000, trava: 5 }
+];
+
+const TAXA_SAQUE = 0.10;
+let user = null;
+let db = JSON.parse(localStorage.getItem('cat_final_db_v8')) || { 
+    users: {}, pending: [], config: { n1: "851511841 - Benjamim Celeste" }, invites: {} 
+};
+
+function save() { localStorage.setItem('cat_final_db_v8', JSON.stringify(db)); }
+
+function getConvidadosCount(phone) {
+    const data = db.invites[phone];
+    return data ? data.invited.length : 0;
+}
+
+function canWithdraw() {
+    if (!user) return false;
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (!user.lastWithdrawal) user.lastWithdrawal = 0;
+    if (!user.withdrawalCount) user.withdrawalCount = 0;
+    if (user.lastWithdrawal === 0) return true;
+    const timeSinceLastWithdrawal = now - user.lastWithdrawal;
+    if (timeSinceLastWithdrawal >= oneDay) {
+        user.withdrawalCount = 0;
+        return true;
+    }
+    return user.withdrawalCount < 1;
+}
+
+function getTimeUntilNextWithdrawal() {
+    if (!user || !user.lastWithdrawal) return null;
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const nextWithdrawalTime = user.lastWithdrawal + oneDay;
+    const timeLeft = nextWithdrawalTime - now;
+    if (timeLeft <= 0) return null;
+    const hours = Math.floor(timeLeft / (60 * 60 * 1000));
+    const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+    return { hours, minutes, timeLeft };
+}
+
+function updateWithdrawalStatus() {
+    const container = document.getElementById('withdrawal-status-container');
+    if (!user) return;
+    const canWithdrawNow = canWithdraw();
+    const timeLeft = getTimeUntilNextWithdrawal();
+    if (canWithdrawNow) {
+        container.innerHTML = `
+            <div class="withdrawal-status available">
+                <span style="color: var(--lime);">✅ Disponível para saque hoje</span>
+                <div style="font-size: 11px; color: #888; margin-top: 5px;">
+                    ${user.withdrawalCount || 0}/1 saque realizado hoje
+                </div>
+            </div>
+        `;
+    } else {
+        container.innerHTML = `
+            <div class="withdrawal-status">
+                <span style="color: var(--orange);">⏰ Limite diário atingido</span>
+                <div class="withdrawal-timer">
+                    Próximo saque em: ${timeLeft.hours}h ${timeLeft.minutes}m
+                </div>
+                <div style="font-size: 11px; color: #888; margin-top: 5px;">
+                    1/1 saque realizado hoje
+                </div>
+            </div>
+        `;
+    }
+    const submitBtn = document.getElementById('btn-submit-out');
+    if (submitBtn) submitBtn.disabled = !canWithdrawNow;
+}
+
+function catJump() {
+    const cat = document.getElementById('cat-mascot');
+    cat.style.animation = 'jump 0.4s';
+    setTimeout(() => cat.style.animation = 'bounce 1.5s infinite', 400);
+}
+
+// FEED FIXO
+const fakeNames = ["Maria S.", "João P.", "Ana C.", "Pedro M.", "Carla R.", "Lucas M.", "Sofia R.", "Tiago N."];
+function generateFakeFeed() {
+    let html = '';
+    for (let i = 0; i < 5; i++) {
+        const isDep = Math.random() > 0.3;
+        const name = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+        const amt = Math.floor(Math.random() * 5000 + 200);
+        html += `<div class="feed-item">
+            <div class="feed-icon ${isDep ? 'dep' : 'out'}">${isDep ? '📥' : '💸'}</div>
+            <div class="feed-content"><div class="feed-name">${name}</div></div>
+            <div class="feed-amt ${isDep ? 'dep' : 'out'}">MT ${amt}</div>
+        </div>`;
+    }
+    document.getElementById('fake-feed').innerHTML = html;
+}
+generateFakeFeed();
+setInterval(generateFakeFeed, 8000);
+
+// BOLHAS FLUTUANTES DE NOTIFICAÇÕES
+const bubbleNames = ["Carlos S.", "Marta L.", "Paulo R.", "Sandra M.", "Fernando C.", "Isabela P.", "Ricardo A.", "Tatiane O.", "Eduardo M.", "Cristina F."];
+const bubbleContainer = document.getElementById('bubble-container');
+
+function createFloatingBubble() {
+    if (!bubbleContainer) return;
+    
+    const isDeposit = Math.random() > 0.4;
+    const name = bubbleNames[Math.floor(Math.random() * bubbleNames.length)];
+    const amount = isDeposit ? 
+        Math.floor(Math.random() * 8000 + 500) : 
+        Math.floor(Math.random() * 3000 + 200);
+    
+    const bubble = document.createElement('div');
+    bubble.className = `floating-bubble ${isDeposit ? 'deposit' : 'withdraw'}`;
+    
+    // Posição aleatória na tela
+    const topPosition = Math.random() * 60 + 15; // 15% a 75% da altura
+    bubble.style.top = topPosition + '%';
+    
+    bubble.innerHTML = `
+        <div class="bubble-icon ${isDeposit ? 'deposit' : 'withdraw'}">
+            ${isDeposit ? '📥' : '💸'}
+        </div>
+        <div class="bubble-content">
+            <span class="bubble-name">${name}</span>
+            <span class="bubble-amount ${isDeposit ? 'deposit' : 'withdraw'}">
+                ${isDeposit ? '+' : '-'} MT ${amount.toLocaleString()}
+            </span>
+        </div>
+    `;
+    
+    bubbleContainer.appendChild(bubble);
+    
+    // Remover após animação
+    setTimeout(() => {
+        if (bubble.parentNode) {
+            bubble.remove();
+        }
+    }, 6000);
+}
+
+// Criar bolhas em intervalos
+function startFloatingBubbles() {
+    setInterval(() => {
+        // Só criar bolhas se estiver na tela de login
+        if (document.getElementById('scr-login').classList.contains('active')) {
+            createFloatingBubble();
+        }
+    }, 3000); // Nova bolha a cada 3 segundos
+    
+    // Criar algumas bolhas iniciais
+    setTimeout(() => createFloatingBubble(), 500);
+    setTimeout(() => createFloatingBubble(), 1500);
+    setTimeout(() => createFloatingBubble(), 2500);
+}
+
+startFloatingBubbles();
+
+// SISTEMA DE GANHO DIÁRIO VIP
+function initDailyEarnings() {
+    if(!user) return;
+    if(!user.dailyPending) user.dailyPending = 0;
+    if(!user.lastCollect) user.lastCollect = 0;
+    
+    const agora = Date.now();
+    const umDia = 24 * 60 * 60 * 1000;
+    
+    if(user.lastCollect === 0 || (agora - user.lastCollect) >= umDia) {
+        const vipInfo = VIPS.find(v => v.lv === user.lv);
+        if(vipInfo && user.lv > 0) {
+            user.dailyPending = vipInfo.diario;
+            save();
+        }
+    }
+    updateDailyUI();
+}
+
+function updateDailyUI() {
+    if(!user) return;
+    const section = document.getElementById('daily-section');
+    const dailyAmount = document.getElementById('daily-amount');
+    const timer = document.getElementById('daily-timer');
+    
+    if(user.lv > 0) {
+        section.style.display = 'block';
+        dailyAmount.innerHTML = `MT ${(user.dailyPending || 0).toFixed(2)}`;
+        
+        const agora = Date.now();
+        const umDia = 24 * 60 * 60 * 1000;
+        const proxColeta = (user.lastCollect || 0) + umDia;
+        
+        if(user.dailyPending > 0 && user.lastCollect > 0 && agora < proxColeta) {
+            const resto = proxColeta - agora;
+            const horas = Math.floor(resto / (60 * 60 * 1000));
+            const minutos = Math.floor((resto % (60 * 60 * 1000)) / (60 * 1000));
+            timer.innerHTML = `⏱️ Próximo ganho em: ${horas}h ${minutos}m`;
+        } else if(user.dailyPending === 0 && user.lastCollect > 0 && agora >= proxColeta) {
+            const vipInfo = VIPS.find(v => v.lv === user.lv);
+            if(vipInfo) {
+                user.dailyPending = vipInfo.diario;
+                save();
+                dailyAmount.innerHTML = `MT ${user.dailyPending.toFixed(2)}`;
+                timer.innerHTML = `✅ Ganho diário disponível! Clique em COLETAR`;
+            }
+        } else {
+            timer.innerHTML = `📅 Colete seu ganho diário!`;
+        }
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+function collectDaily() {
+    if(!user) return;
+    if(user.lv === 0) {
+        alert("❌ Você precisa ativar um plano VIP primeiro!");
+        return;
+    }
+    if(!user.dailyPending || user.dailyPending <= 0) {
+        alert("⏳ Nenhum ganho disponível no momento. Aguarde 24h após a última coleta.");
+        return;
+    }
+    
+    const valor = user.dailyPending;
+    user.bal += valor;
+    user.dailyPending = 0;
+    user.lastCollect = Date.now();
+    save();
+    updateUI();
+    updateDailyUI();
+    alert(`✅ Você coletou MT ${valor.toFixed(2)}!\nO valor foi adicionado ao seu saldo principal.`);
+}
+
+// CONVITE
+function generateInviteLink(phone) { 
+    // URL base do site - pode ser alterada conforme necessário
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}?ref=${btoa(phone)}`;
+}
+
+// Processar parâmetro de convite da URL
+function processInviteParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = urlParams.get('ref');
+    
+    if (refParam) {
+        try {
+            const referrerPhone = atob(refParam);
+            document.getElementById('ref-input').value = referrerPhone;
+            
+            // Mostrar notificação
+            const notice = document.getElementById('invite-notice');
+            const referrer = db.users[referrerPhone];
+            if (referrer) {
+                notice.innerHTML = `🎁 Você foi convidado por ${referrer.name}! Complete seu cadastro para ganhar bônus.`;
+            } else {
+                notice.innerHTML = `🎁 Você foi convidado! Complete seu cadastro para começar.`;
+            }
+            notice.classList.add('show');
+        } catch (e) {
+            console.log('Erro ao processar convite:', e);
+        }
+    }
+}
+
+function updateInviteDisplay() {
+    if(user) {
+        const temVIP = user.lv > 0;
+        document.getElementById('invite-section').style.display = temVIP ? 'block' : 'none';
+        document.getElementById('invite-locked').style.display = temVIP ? 'none' : 'block';
+        if(temVIP) document.getElementById('invite-link-display').innerText = generateInviteLink(user.phone);
+        const inviterData = db.invites[user.phone] || { invited: [], earnings: 0 };
+        document.getElementById('invite-earnings').innerText = `MT ${inviterData.earnings.toLocaleString()}`;
+        document.getElementById('invited-count').innerText = inviterData.invited.length;
+        renderTeamList();
+    }
+}
+
+function copyInviteLink() {
+    if(!user || user.lv === 0) { alert('⚠️ Ative um VIP para convidar!'); return; }
+    const link = document.getElementById('invite-link-display').innerText;
+    navigator.clipboard?.writeText(link).then(() => alert('✅ Link copiado! Compartilhe com seus amigos.')).catch(() => alert('📋 Copie manualmente: ' + link));
+}
+
+function renderTeamList() {
+    if(!user) return;
+    const data = db.invites[user.phone] || { invited: [], earnings: 0 };
+    const container = document.getElementById('team-members-list');
+    if(data.invited.length === 0) {
+        container.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">Nenhum indicado ainda.</p>';
+        return;
+    }
+    let html = '';
+    data.invited.forEach(p => {
+        const u = db.users[p];
+        if(u) html += `<div style="display:flex;justify-content:space-between;padding:12px;background:#111;border-radius:12px;margin-bottom:8px;"><span>${u.name}</span><span style="color:var(--lime);">${u.phone}</span></div>`;
+    });
+    container.innerHTML = html;
+}
+
+function showInvitedList() { renderTeamList(); }
+
+// LOGIN
+function handleCreateAccount() {
+    let n = document.getElementById('reg-name').value.trim();
+    let p = document.getElementById('reg-phone').value.trim();
+    let s = document.getElementById('reg-pass').value.trim();
+    const referrer = document.getElementById('ref-input').value.trim();
+    
+    if(!n || !p || !s) return alert("Preencha todos os campos!");
+    if(db.users[p]) return alert("Conta já existe. Faça login.");
+    
+    db.users[p] = { 
+        name: n, phone: p, pass: s, bal: 0, lv: 0, activeInvest: [], 
+        dailyPending: 0, lastCollect: 0, lastWithdrawal: 0, withdrawalCount: 0 
+    };
+    
+    // Registrar convite
+    if (referrer && db.users[referrer]) {
+        if (!db.invites[referrer]) {
+            db.invites[referrer] = { invited: [], earnings: 0 };
+        }
+        if (!db.invites[referrer].invited.includes(p)) {
+            db.invites[referrer].invited.push(p);
+        }
+    }
+    
+    save();
+    alert("🎉 Conta criada com sucesso! Faça login.");
+    
+    // Limpar campo de referência
+    document.getElementById('ref-input').value = '';
+    document.getElementById('invite-notice').classList.remove('show');
+}
+
+function handleLogin() {
+    let p = document.getElementById('reg-phone').value.trim();
+    let s = document.getElementById('reg-pass').value.trim();
+    let u = db.users[p];
+    if(!u || u.pass !== s) return alert("Dados incorretos.");
+    user = u;
+    if(!user.dailyPending && user.dailyPending !== 0) user.dailyPending = 0;
+    if(!user.lastCollect) user.lastCollect = 0;
+    if(!user.lastWithdrawal) user.lastWithdrawal = 0;
+    if(!user.withdrawalCount) user.withdrawalCount = 0;
+    save();
+    document.getElementById('menu').style.display = 'flex';
+    changeScr('scr-home');
+    checkWealthExpiry();
+    updateInviteDisplay();
+    initDailyEarnings();
+    catJump();
+}
+
+function handleRecover() {
+    alert("🔑 Contate o suporte: 851511841 (WhatsApp) para recuperar sua conta.");
+}
+
+function fillDemo() {
+    document.getElementById('reg-name').value = "Usuário Demo";
+    document.getElementById('reg-phone').value = "840000000";
+    document.getElementById('reg-pass').value = "123456";
+    if(!db.users["840000000"]) {
+        db.users["840000000"] = { 
+            name: "Usuário Demo", phone: "840000000", pass: "123456", bal: 50000, lv: 0, 
+            activeInvest: [], dailyPending: 0, lastCollect: 0, lastWithdrawal: 0, withdrawalCount: 0 
+        };
+        save();
+    }
+}
+
+function logout() {
+    user = null;
+    document.getElementById('menu').style.display = 'none';
+    changeScr('scr-login');
+}
+
+// INTERFACE PRINCIPAL
+function changeScr(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id === 'scr-home') { renderVips(); renderWealth(); renderActive(); updateDailyUI(); }
+    if(id === 'scr-dep') document.getElementById('txt-n1').innerText = db.config.n1;
+    if(id === 'scr-out') { 
+        renderOutButtons(); 
+        updateWithdrawalStatus(); 
+    }
+    if(id === 'scr-invite') updateInviteDisplay();
+    if(user) updateUI();
+}
+
+// RENDERIZAR VIPs
+function renderVips() {
+    let h = '';
+    VIPS.forEach(v => {
+        const isActive = user && user.lv === v.lv;
+        const isPurchased = user && user.lv >= v.lv;
+        const borderColor = v.lv <= 6 ? '#32cd32' : (v.lv <= 12 ? '#ffd700' : '#ff4500');
+        const lucroTotal = v.total210 - v.ativacao;
+        const roi = Math.round((lucroTotal / v.ativacao) * 100);
+        
+        h += `<div class="vip-card" style="border-color: ${borderColor}; ${isActive ? 'box-shadow: 0 0 15px ' + borderColor + '40;' : ''}">
+            <span class="vip-badge ${v.cor}">⭐ VIP ${v.lv}</span>
+            <div class="vip-title">Nível ${v.lv}</div>
+            <div class="vip-details">
+                <div class="vip-item"><div class="vip-label">Ativação</div><div class="vip-value">MT ${v.ativacao.toLocaleString()}</div></div>
+                <div class="vip-item"><div class="vip-label">Ganho Diário</div><div class="vip-value">MT ${v.diario}</div></div>
+                <div class="vip-item"><div class="vip-label">Lucro Total</div><div class="vip-value">MT ${lucroTotal.toLocaleString()}</div></div>
+                <div class="vip-item"><div class="vip-label">Total 210 dias</div><div class="vip-value">MT ${v.total210.toLocaleString()}</div></div>
+            </div>
+            <div style="font-size:11px; color:#888; margin-bottom:8px;">📈 Rendimento: +${roi}% em 210 dias</div>
+            <button class="vip-btn" onclick="buyVip(${v.lv})" style="background: ${borderColor};" ${isPurchased ? 'disabled' : ''}>
+                ${isActive ? '✅ ATIVO' : (isPurchased ? '🔒 NÍVEL INFERIOR' : '⭐ ATIVAR VIP')}
+            </button>
+        </div>`;
+    });
+    document.getElementById('list-vips').innerHTML = h;
+}
+
+// RENDERIZAR FUNDOS
+function renderWealth() {
+    let h = '';
+    const convidados = user ? getConvidadosCount(user.phone) : 0;
+    const podeInvestir = convidados >= 1;
+    
+    WEALTH.forEach(w => {
+        const jafez = user && user.activeInvest.some(inv => inv.fundoId === w.id);
+        h += `<div class="wealth-card" style="border-color: var(--orange); ${jafez ? 'opacity:0.85;' : ''}">
+            <span class="wealth-badge ${w.badge}">${w.icon} ${w.id}</span>
+            <div class="wealth-title">${w.name}</div>
+            <div class="wealth-details">
+                <div class="wealth-item"><div class="wealth-label">Ativação</div><div class="wealth-value">MT ${w.ativacao.toLocaleString()}</div></div>
+                <div class="wealth-item"><div class="wealth-label">Ciclo</div><div class="wealth-value">${w.ciclo} dias</div></div>
+                <div class="wealth-item"><div class="wealth-label">Valor Final</div><div class="wealth-value">MT ${w.valorFinal.toLocaleString()}</div></div>
+                <div class="wealth-item"><div class="wealth-label">Lucro</div><div class="wealth-roi">+${Math.round((w.valorFinal-w.ativacao)/w.ativacao*100)}%</div></div>
+            </div>
+            <div style="font-size:10px; color: ${podeInvestir ? 'var(--lime)' : '#888'}; margin-bottom:8px;">
+                ${podeInvestir ? (jafez ? '🔒 Já investiu' : '✅ Liberado (1+ convidado)') : '🔒 Requer 1 convidado VIP'}
+            </div>
+            <button class="wealth-btn" onclick="buyWealth('${w.id}')" ${!podeInvestir || jafez ? 'disabled' : ''}>
+                ${jafez ? '🔒 INVESTIMENTO ATIVO' : '💰 INVESTIR'}
+            </button>
+        </div>`;
+    });
+    document.getElementById('list-wealth').innerHTML = h;
+}
+
+function buyVip(lv) {
+    if(!user) return;
+    let v = VIPS.find(x => x.lv == lv);
+    if(user.bal < v.ativacao) return alert("❌ Saldo insuficiente!");
+    
+    if(confirm(`Comprar VIP ${lv} por MT ${v.ativacao.toLocaleString()}?\nGanho diário: MT ${v.diario}`)) {
+        user.bal -= v.ativacao;
+        user.lv = lv;
+        user.dailyPending = v.diario;
+        user.lastCollect = 0;
+        save();
+        updateUI();
+        renderVips();
+        renderWealth();
+        updateDailyUI();
+        updateInviteDisplay();
+        catJump();
+        alert(`🎉 PARABÉNS! VIP ${lv} ativado com sucesso!\nAgora você pode convidar amigos e coletar MT ${v.diario} por dia!`);
+    }
+}
+
+function buyWealth(id) {
+    if(!user) return;
+    let w = WEALTH.find(x => x.id == id);
+    const convidados = getConvidadosCount(user.phone);
+    if(convidados < 1) return alert("🔒 Você precisa ter pelo menos 1 convidado VIP para investir neste fundo!");
+    
+    const jafez = user.activeInvest.some(inv => inv.fundoId === id);
+    if(jafez) return alert("⚠️ Você já tem um investimento ativo neste fundo!");
+    
+    if(user.bal < w.ativacao) return alert("❌ Saldo insuficiente!");
+    
+    if(confirm(`Investir ${w.ativacao.toLocaleString()} MT no ${w.name}? O valor será travado por ${w.ciclo} dias.`)) {
+        user.bal -= w.ativacao;
+        let exp = new Date();
+        exp.setDate(exp.getDate() + w.ciclo);
+        user.activeInvest.push({ name: w.name, total: w.valorFinal, expiry: exp.getTime(), fundoId: w.id, ativacao: w.ativacao });
+        save();
+        updateUI();
+        renderActive();
+        renderWealth();
+        alert(`🏦 ${w.name} adquirido! Será liberado automaticamente em ${w.ciclo} dias com lucro de ${Math.round((w.valorFinal-w.ativacao)/w.ativacao*100)}%.`);
+    }
+}
+
+function checkWealthExpiry() {
+    if(!user) return;
+    let now = Date.now();
+    const convidados = getConvidadosCount(user.phone);
+    let liberados = false;
+    
+    user.activeInvest = user.activeInvest.filter(i => {
+        if(now >= i.expiry) {
+            if(convidados >= 1) {
+                user.bal += i.total;
+                liberados = true;
+                alert(`🎉 INVESTIMENTO LIBERADO! ${i.name} rendeu MT ${i.total.toLocaleString()}.`);
+            } else {
+                alert(`⚠️ ${i.name} expirou mas requer 1 convidado para liberar! Convide alguém para receber MT ${i.total.toLocaleString()}`);
+                return true;
+            }
+            return false;
+        }
+        return true;
+    });
+    
+    if(liberados) { save(); updateUI(); renderActive(); renderWealth(); }
+}
+
+function renderActive() {
+    if(!user || !user.activeInvest || user.activeInvest.length === 0) {
+        document.getElementById('active-sec').style.display = 'none';
+        return;
+    }
+    document.getElementById('active-sec').style.display = 'block';
+    document.getElementById('my-active-investments').innerHTML = user.activeInvest.map(i => `
+        <div class="card investment-locked">
+            <div class="info-row"><b>${i.name}</b> <span>MT ${i.total.toLocaleString()}</span></div>
+            <div class="badge-locked" style="margin-top:8px;">🔒 Libera em ${Math.max(0, Math.ceil((i.expiry - Date.now()) / (1000 * 60 * 60 * 24)))} dias</div>
+        </div>`).join('');
+}
+
+// SAQUE
+function renderOutButtons() {
+    if(!user) return;
+    const convidados = getConvidadosCount(user.phone);
+    let h = ''; 
+    OUTS.forEach(b => {
+        const liberado = convidados >= b.trava;
+        h += `<button class="saque-btn ${liberado ? '' : 'locked'}" onclick="setO(${b.valor})" ${!liberado ? 'disabled' : ''}>
+            MT ${b.valor}<span class="saque-trava">${b.trava > 0 ? '🔒 ' + b.trava + ' convidado' : '✅ Livre'}</span>
+        </button>`;
+    });
+    document.getElementById('grid-out').innerHTML = h;
+}
+
+let selectedSaqueValor = 0;
+
+function setO(v) {
+    if(!user) return;
+    const convidados = getConvidadosCount(user.phone);
+    const botao = OUTS.find(b => b.valor === v);
+    if(convidados < botao.trava) {
+        alert(`⚠️ Requer ${botao.trava} convidado(s) VIP para sacar este valor.`);
+        return;
+    }
+    selectedSaqueValor = v;
+    document.getElementById('out-val').value = "MT " + v;
+    let taxa = v * TAXA_SAQUE;
+    let liquido = v - taxa;
+    document.getElementById('preview-amount').innerText = `MT ${v.toFixed(2)}`;
+    document.getElementById('preview-fee').innerText = `MT ${taxa.toFixed(2)}`;
+    document.getElementById('preview-net').innerText = `MT ${liquido.toFixed(2)}`;
+    document.getElementById('saque-trava-info').innerHTML = botao.trava > 0 ? `🔒 Trava: ${botao.trava} convidado(s) VIP` : '✅ Sem trava';
+}
+
+function sendDep() {
+    if(!user) return;
+    let numero = document.getElementById('dep-numero').value.trim();
+    let nome = document.getElementById('dep-nome').value.trim();
+    let amt = parseFloat(document.getElementById('in-amt').value);
+    let ref = document.getElementById('in-ref').value.trim();
+    if(!numero || !nome || !amt || !ref) return alert("Preencha todos os campos!");
+    if(amt < 50) return alert("Depósito mínimo: MT 50");
+    db.pending.push({ type: 'DEP', name: user.name, phone: user.phone, depNumero: numero, depNome: nome, amt, ref });
+    save();
+    alert("📤 Depósito solicitado! Aguarde aprovação.");
+    changeScr('scr-home');
+}
+
+function sendOut() {
+    if(!user) return;
+    
+    if(!canWithdraw()) {
+        const timeLeft = getTimeUntilNextWithdrawal();
+        alert(`⏰ Limite diário de saque atingido!\nVocê já realizou 1 saque hoje.\nPróximo saque disponível em: ${timeLeft.hours}h ${timeLeft.minutes}m`);
+        return;
+    }
+    
+    let numero = document.getElementById('out-numero').value.trim();
+    let nome = document.getElementById('out-nome').value.trim();
+    let v = selectedSaqueValor;
+    if(!numero || !nome || !v) return alert("Preencha todos os campos e selecione um valor!");
+    
+    const convidados = getConvidadosCount(user.phone);
+    const botao = OUTS.find(b => b.valor === v);
+    if(convidados < botao.trava) return alert(`⚠️ Você precisa de ${botao.trava} convidado(s) VIP para sacar MT ${v}.`);
+    if(user.bal < v) return alert("Saldo insuficiente!");
+    
+    let taxa = v * TAXA_SAQUE;
+    let liquido = v - taxa;
+    if(confirm(`Confirmar saque?\nValor: MT ${v}\nTaxa (10%): MT ${taxa.toFixed(2)}\nReceberá: MT ${liquido.toFixed(2)}\n\n⚠️ Lembre-se: apenas 1 saque por dia!`)) {
+        user.bal -= v;
+        user.lastWithdrawal = Date.now();
+        user.withdrawalCount = (user.withdrawalCount || 0) + 1;
+        
+        db.pending.push({ type: 'SAQUE', name: user.name, phone: user.phone, saqueNumero: numero, saqueNome: nome, amt: v, liq: liquido });
+        save();
+        updateUI();
+        updateWithdrawalStatus();
+        alert("💸 Saque solicitado! Aguarde aprovação.\nVocê já utilizou seu saque diário. O próximo estará disponível em 24 horas.");
+        changeScr('scr-home');
+    }
+}
+
+// ADMIN
+let clicks = 0;
+function tapAdm() { 
+    clicks++; 
+    if(clicks >= 5 && prompt("Senha:") === "cat2026") { changeScr('scr-adm'); renderAdm(); clicks = 0; }
+    setTimeout(() => clicks = 0, 2000);
+}
+
+function saveConfig() { db.config.n1 = document.getElementById('ed-n1').value || db.config.n1; save(); alert("✅ Atualizado!"); }
+
+function searchUser() {
+    const phone = document.getElementById('search-user').value.trim();
+    const u = db.users[phone];
+    const display = document.getElementById('user-info-display');
+    if(!u) { display.innerHTML = '<p style="color:red;">Usuário não encontrado.</p>'; return; }
+    const convidados = db.invites[phone]?.invited?.length || 0;
+    const lastWithdrawal = u.lastWithdrawal ? new Date(u.lastWithdrawal).toLocaleString() : 'Nunca';
+    display.innerHTML = `<div class="card">
+        <p><b>${u.name}</b> (${u.phone})</p>
+        <p>Saldo: MT ${u.bal.toLocaleString()} | VIP ${u.lv}</p>
+        <p>👥 Convidados: ${convidados}</p>
+        <p>🔑 Senha: ${u.pass}</p>
+        <p>💳 Saques hoje: ${u.withdrawalCount || 0}/1</p>
+        <p>🕐 Último saque: ${lastWithdrawal}</p>
+    </div>`;
+}
+
+function renderAdm() {
+    document.getElementById('ed-n1').value = db.config.n1;
+    let h = '';
+    if(db.pending.length === 0) h = '<p style="color:#888;text-align:center;">✅ Nenhuma pendência.</p>';
+    else {
+        db.pending.forEach((p, i) => {
+            if(p.type === 'SAQUE') {
+                const taxa = p.amt * 0.10;
+                const liquido = p.amt - taxa;
+                h += `<div class="card" style="border-left: 4px solid var(--orange);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 20px;">💸</span>
+                        <b style="color: var(--orange); font-size: 16px;">SAQUE</b>
+                    </div>
+                    <div class="info-row"><span><b>Cliente:</b></span> <span>${p.name}</span></div>
+                    <div class="info-row"><span><b>Telefone:</b></span> <span>${p.phone}</span></div>
+                    <div class="info-row"><span><b>Número destino:</b></span> <span>${p.saqueNumero}</span></div>
+                    <div class="info-row"><span><b>Nome destino:</b></span> <span>${p.saqueNome}</span></div>
+                    <div class="admin-divider"></div>
+                    <div class="admin-saque-details">
+                        <div class="info-row"><span>Valor solicitado:</span> <span>MT ${p.amt.toFixed(2)}</span></div>
+                        <div class="info-row"><span>Taxa (10%):</span> <span style="color: var(--orange);">- MT ${taxa.toFixed(2)}</span></div>
+                        <div class="info-row" style="border-top: 1px solid #444; padding-top: 8px; margin-top: 5px;">
+                            <span style="font-weight: bold;">💵 VALOR A PAGAR:</span>
+                            <span class="admin-valor-pagar">MT ${liquido.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="admin-buttons">
+                        <button class="admin-btn-approve" onclick="admAct(${i},true)">✅ APROVAR</button>
+                        <button class="admin-btn-reject" onclick="admAct(${i},false)">❌ NEGAR</button>
+                    </div>
+                </div>`;
+            } else {
+                h += `<div class="card" style="border-left: 4px solid var(--lime);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 20px;">📥</span>
+                        <b style="color: var(--lime); font-size: 16px;">DEPÓSITO</b>
+                    </div>
+                    <div class="info-row"><span><b>Cliente:</b></span> <span>${p.name}</span></div>
+                    <div class="info-row"><span><b>Telefone:</b></span> <span>${p.phone}</span></div>
+                    <div class="info-row"><span><b>Enviou de:</b></span> <span>${p.depNumero}</span></div>
+                    <div class="info-row"><span><b>Referência:</b></span> <span>${p.ref || '---'}</span></div>
+                    <div class="info-row" style="margin-top: 10px;">
+                        <span><b>Valor:</b></span>
+                        <span style="color: var(--lime); font-size: 18px; font-weight: bold;">MT ${p.amt.toFixed(2)}</span>
+                    </div>
+                    <div class="admin-buttons">
+                        <button class="admin-btn-approve" onclick="admAct(${i},true)">✅ APROVAR</button>
+                        <button class="admin-btn-reject" onclick="admAct(${i},false)">❌ NEGAR</button>
+                    </div>
+                </div>`;
+            }
+        });
+    }
+    document.getElementById('adm-list').innerHTML = h;
+}
+
+function admAct(i, ok) {
+    let p = db.pending[i];
+    if(ok && p.type === 'DEP') {
+        db.users[p.phone].bal += p.amt;
+        const invitedBy = Object.keys(db.users).find(k => {
+            const inv = db.invites[k];
+            return inv && inv.invited.includes(p.phone);
+        });
+        if(invitedBy && db.users[invitedBy]) {
+            const com = p.amt * 0.10;
+            db.users[invitedBy].bal += com;
+            if(!db.invites[invitedBy]) db.invites[invitedBy] = { invited: [], earnings: 0 };
+            db.invites[invitedBy].earnings += com;
+        }
+        alert(`✅ Depósito de MT ${p.amt.toFixed(2)} aprovado para ${p.name}!`);
+    }
+    if(!ok && p.type === 'SAQUE') {
+        db.users[p.phone].bal += p.amt;
+        if(db.users[p.phone].withdrawalCount > 0) {
+            db.users[p.phone].withdrawalCount--;
+        }
+        alert(`❌ Saque de MT ${p.amt.toFixed(2)} negado. Valor devolvido ao saldo de ${p.name}.`);
+    }
+    if(ok && p.type === 'SAQUE') {
+        alert(`✅ Saque aprovado! Envie MT ${(p.amt * 0.90).toFixed(2)} para ${p.saqueNome} (${p.saqueNumero})`);
+    }
+    db.pending.splice(i, 1);
+    save(); 
+    renderAdm(); 
+    if(user && db.users[user.phone]) updateUI();
+}
+
+function updateUI() {
+    if(user) {
+        const currentUser = db.users[user.phone];
+        if(currentUser) {
+            user = currentUser;
+            document.getElementById('bal-txt').innerHTML = "MT " + user.bal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('user-info').innerHTML = `${user.name} | VIP ${user.lv || "0"} | 👥 ${getConvidadosCount(user.phone)}`;
+        }
+    }
+}
+
+function switchTab(n) {
+    document.getElementById('list-vips').style.display = n == 1 ? 'flex' : 'none';
+    document.getElementById('list-wealth').style.display = n == 2 ? 'flex' : 'none';
+    document.getElementById('t1').className = n == 1 ? 'tab active' : 'tab';
+    document.getElementById('t2').className = n == 2 ? 'tab active' : 'tab';
+}
+
+// Inicializar processamento de convite ao carregar a página
+processInviteParam();
+
+setInterval(() => { 
+    if(user) { 
+        checkWealthExpiry(); 
+        updateUI(); 
+        initDailyEarnings(); 
+        updateDailyUI(); 
+        if(document.getElementById('scr-out').classList.contains('active')) {
+            updateWithdrawalStatus();
+        }
+    } 
+}, 60000);
+</script>
+</body>
+</html>
